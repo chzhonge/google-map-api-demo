@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class GoogleGeocode
 {
@@ -44,6 +45,11 @@ class GoogleGeocode
             ]);
 
             $data = $res->json();
+
+            if ($res->failed() or isset($data['error_message'])) {
+                Log::warning($data['error_message'] . 'from GoogleGeocode Service +57');
+                continue;
+            }
 
             if ($this->resource_format) {
                 $data = $this->parse($data);
