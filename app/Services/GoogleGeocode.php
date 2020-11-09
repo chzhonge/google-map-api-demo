@@ -8,6 +8,7 @@ class GoogleGeocode
 {
     const MAP_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json';
     const REPLACE_PATTERN = '/\s|\(.*\)/';
+    const COMMENT_PATTERN = '/(?<comment>\(.*\))/';
 
     private $api_key = null;
     private $resource_format = false;
@@ -50,6 +51,7 @@ class GoogleGeocode
 
             $output[$target] = [
                 'address' => $data,
+                'extra' => $this->getExtraComment($target),
             ];
         }
 
@@ -88,5 +90,14 @@ class GoogleGeocode
         ];
 
         return $output;
+    }
+
+    private function getExtraComment($address)
+    {
+        $comment = '';
+        if (preg_match(self::COMMENT_PATTERN, $address, $match)) {
+            $comment = $match['comment'];
+        }
+        return $comment;
     }
 }
