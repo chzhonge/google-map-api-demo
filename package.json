@@ -17,6 +17,12 @@
         "resolve-url-loader": "^3.1.0"
     },
     "dependencies": {
+        "@tailwindcss/custom-forms": "^0.2.1",
+        "@tailwindcss/ui": "^0.7.2",
+        "autoprefixer": "^10.0.1",
+        "postcss-import": "^13.0.0",
+        "postcss-nested": "^5.0.1",
+        "tailwindcss": "^1.9.6",
         "vue": "^2.6",
         "vue-meta": "^2.4",
         "vue-template-compiler": "^2.6"
