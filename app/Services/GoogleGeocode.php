@@ -10,6 +10,13 @@ class GoogleGeocode
     const REPLACE_PATTERN = '/\s|\(.*\)/';
 
     private $api_key = null;
+    private $resource_format = false;
+
+    public function format(bool $enable)
+    {
+        $this->resource_format = $enable;
+        return $this;
+    }
 
     public function setAuthorizationKey($api_key)
     {
@@ -37,6 +44,10 @@ class GoogleGeocode
 
             $data = $res->json();
 
+            if ($this->resource_format) {
+                $data = $this->parse($data);
+            }
+
             $output[$target] = [
                 'address' => $data,
             ];
@@ -57,5 +68,25 @@ class GoogleGeocode
         }
 
         return $this->api_key;
+    }
+
+    private function parse($response_data)
+    {
+        $info = $response_data['results'][0] ?? [];
+        $address_components = $info['address_components'];
+        $address_mapping = collect($address_components)->map(function ($item, $key) {
+            $type = collect($item['types'])->reject(function ($value, $type) {
+                return $value === 'political';
+            })->first();
+            return [$type => $item['long_name']];
+        })->collapse();
+
+        $output = [
+            'info' => $address_mapping,
+            'geometry' => $info['geometry'],
+            'formatted_address' => $info['formatted_address'],
+        ];
+
+        return $output;
     }
 }
